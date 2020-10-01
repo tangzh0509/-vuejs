@@ -5,13 +5,10 @@
       <img slot="item-icon-active" src="~assets/img/home/home_active.svg">
       <div slot="item-text">首页</div>
     </tabbaritem>
-    <tabbaritem path="/discovery">
-      <img slot="item-icon" src="~assets/img/discovery/discovery.svg">
-      <img slot="item-icon-active" src="~assets/img/discovery/discovery_active.svg">
+    <tabbaritem path="/category">
+      <img slot="item-icon" src="~assets/img/category/category.svg">
+      <img slot="item-icon-active" src="~assets/img/category/category_active.svg">
       <div slot="item-text">发现</div>
-    </tabbaritem>
-    <tabbaritem path="/">
-      <div slot="item-text">+</div>
     </tabbaritem>
     <tabbaritem path="/shop">
       <img slot="item-icon" src="~assets/img/shop/shop.svg">

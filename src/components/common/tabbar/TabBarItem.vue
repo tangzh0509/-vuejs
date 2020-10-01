@@ -15,7 +15,7 @@ export default {
     },
     activeColor:{
       type:String,
-      default:'#7fffd4'
+      default:'pink'
     }
   },
   computed:{

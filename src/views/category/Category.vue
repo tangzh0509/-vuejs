@@ -1,12 +1,12 @@
 <template>
   <div>
-    <h2>发现</h2>
+    <h2>分类</h2>
   </div>
 </template>
 
 <script>
 export default {
-name: "Discavery"
+name: "Category"
 }
 </script>
 
