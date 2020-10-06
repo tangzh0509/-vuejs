@@ -7,6 +7,8 @@ Vue.config.productionTip = false
 Vue.use(Carousel)
 Vue.use(CarouselItem)
 
+Vue.prototype.$bus = new Vue()
+
 new Vue({
   el:'#app',
   router,

@@ -3,13 +3,18 @@
     <navbar class="home-nav">
       <div slot="center">购物街</div>
     </navbar>
-    <scroll class="scroll-wrapper">
+    <scroll class="scroll-wrapper" ref="scroll"
+            :probeType="3"
+            :pullUpLoad="true"
+            @scrollPosition="scrollContent"
+            @loadMore="loadMore">
       <homecarousel :banners="banners"/>
       <homerecview :recommends="recommends"/>
       <featureview/>
       <tabcontrol :titles="['流行','新款','精选']" @tabClick="tabClick"/>
       <goodslist :goods="showGoods"/>
     </scroll>
+    <backtop @click.native="clickBackTop" v-show="isShow"/>
   </div>
 </template>
 
@@ -20,11 +25,15 @@ import homerecview from './childComps/HomeRecommendView'
 import featureview from './childComps/FeatureView'
 
 import navbar from 'components/common/navbar/NavBar'
+import scroll from 'components/common/scroll/Scroll'
 import tabcontrol from 'components/content/tabcontrol/TabControl'
 import goodslist from 'components/content/goods/GoodsList'
-import scroll from 'components/common/scroll/Scroll'
+import backtop from 'components/content/backtop/BackTop'
+
 
 import {getHomeMultidate, getHomeGoods} from "@/network/home"
+import {debounce} from "@/common/utils";
+
 export default {
   name: "Home",
   components:{
@@ -34,7 +43,8 @@ export default {
     featureview,
     tabcontrol,
     goodslist,
-    scroll
+    scroll,
+    backtop
   },
   data(){
     return {
@@ -45,7 +55,8 @@ export default {
         'new':{page:0, list:[]},
         'sell':{page:0, list:[]}
       },
-      currenttype:'pop'
+      currenttype:'pop',
+      isShow:false
     }
   },
   created() {
@@ -55,6 +66,13 @@ export default {
     this.getHomeGoods('pop');
     this.getHomeGoods('new');
     this.getHomeGoods('sell');
+  },
+  mounted() {
+    //监听图片加载是否完成
+    const refresh = debounce(this.$refs.scroll.refresh, 500)
+    this.$bus.$on('itemImageLoad', () => {
+      refresh()
+    })
   },
   computed:{
     showGoods(){
@@ -77,6 +95,16 @@ export default {
           this.currenttype = 'sell';
       }
     },
+    clickBackTop(){
+      const y = -556.5
+      this.$refs.scroll.scrollTo(0, y)
+    },
+    scrollContent(position){
+      this.isShow = (-position.y > 1000) ? true:false
+    },
+    loadMore(){
+      this.getHomeGoods(this.currenttype)
+    },
     /**
      * 网络请求相关方法
      */
@@ -92,6 +120,8 @@ export default {
       getHomeGoods(type, page).then(res => {
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page += 1
+        //finishPullUp，为下一次上拉做准备
+        this.$refs.scroll.finishPullUp()
       })
     }
   }
