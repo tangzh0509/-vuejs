@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html onclick="console.log('html')">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Test</title>
+    <script type="text/javascript">
+        window.onload = function() {
+            const parent = document.getElementById("parent");
+            const child = document.getElementById("child");
+
+            child.onclick = function () { console.log('child onclick') };
+
+            // capture 默认为 false, 冒泡
+            parent.addEventListener('click', function () { console.log('parent event') });
+            child.addEventListener('click', function () { console.log('child event') });
+
+            // 捕获
+            parent.addEventListener('click', function () { console.log('parent event capture') }, { capture: true });
+            child.addEventListener('click', function () { console.log('child event capture') }, { capture: true });
+        }
+        window.onclick = function() {
+            console.log('window');
+        }
+    </script>
+</head>
+
+<body onclick="console.log('body')">
+<div id="parent" onclick="console.log('parent html')">parent
+    <div id="child" onclick="console.log('child html')">child</div>
+</div>
+
+</body>
+
+</html>

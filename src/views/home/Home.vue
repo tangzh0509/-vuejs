@@ -3,15 +3,22 @@
     <navbar class="home-nav">
       <div slot="center">购物街</div>
     </navbar>
+    <tabcontrol :titles="['流行','新款','精选']"
+                @tabClick="tabClick"
+                ref="tabControl1"
+                class="tab-controll"
+                v-show="isTabFixed"/>
     <scroll class="scroll-wrapper" ref="scroll"
             :probeType="3"
             :pullUpLoad="true"
             @scrollPosition="scrollContent"
             @loadMore="loadMore">
-      <homecarousel :banners="banners"/>
+      <homecarousel :banners="banners" :carouselHeight="getCarouselHeight" @carouselImgLoad="carouselImgLoad"/>
       <homerecview :recommends="recommends"/>
       <featureview/>
-      <tabcontrol :titles="['流行','新款','精选']" @tabClick="tabClick"/>
+      <tabcontrol :titles="['流行','新款','精选']"
+                  @tabClick="tabClick"
+                  ref="tabControl2"/>
       <goodslist :goods="showGoods"/>
     </scroll>
     <backtop @click.native="clickBackTop" v-show="isShow"/>
@@ -48,15 +55,18 @@ export default {
   },
   data(){
     return {
-      banners:[],
-      recommends:[],
+      banners:{},
+      recommends:{},
       goods:{
         'pop':{page:0, list:[]},
         'new':{page:0, list:[]},
         'sell':{page:0, list:[]}
       },
       currenttype:'pop',
-      isShow:false
+      isShow:false,
+      tabOffsetTop:0,
+      isTabFixed:false,
+      saveY:0
     }
   },
   created() {
@@ -74,9 +84,19 @@ export default {
       refresh()
     })
   },
+  activated() {
+    this.$refs.scroll.scrollTo(0, this.saveY, 0)
+    this.$refs.scroll.refresh()
+  },
+  deactivated() {
+    this.saveY = this.$refs.scroll.getScrollY()
+  },
   computed:{
     showGoods(){
       return this.goods[this.currenttype].list
+    },
+    getCarouselHeight(){
+      return document.body.clientWidth * 0.52 + "px"
     }
   },
   methods:{
@@ -96,14 +116,22 @@ export default {
       }
     },
     clickBackTop(){
-      const y = -556.5
-      this.$refs.scroll.scrollTo(0, y)
+      const y = this.tabOffsetTop
+      this.$refs.scroll.scrollTo(0, -y)
     },
     scrollContent(position){
+      //判断backTop是否显示
       this.isShow = (-position.y > 1000) ? true:false
+      //决定tabControl是否吸顶
+      this.isTabFixed = (-position.y) > this.tabOffsetTop
     },
     loadMore(){
       this.getHomeGoods(this.currenttype)
+    },
+    carouselImgLoad(){
+      //获取tabControl的offsetTop
+      //console.log(this.$refs.tabControl.$el.offsetTop) 好奇怪，结果总是大46px=》重新npm run serve后就没有这种情况了
+      this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
     },
     /**
      * 网络请求相关方法
@@ -138,7 +166,17 @@ export default {
     color: white;
   }
   .scroll-wrapper{
-    height: calc(100% - 93px);
+    /*height: calc(100% - 93px);*/
     overflow: hidden;
+
+    position: absolute;
+    top:44px;
+    bottom: 49px;
+    left: 0;
+    right: 0;
+  }
+  .tab-controll{
+    position: relative;
+    z-index: 9;
   }
 </style>
