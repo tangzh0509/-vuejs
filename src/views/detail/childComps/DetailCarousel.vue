@@ -28,6 +28,5 @@ export default {
   .el-carousel-item img{
     width: 100%;
     height: auto;
-    vertical-align: center;
   }
 </style>

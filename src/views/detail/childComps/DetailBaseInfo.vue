@@ -1,22 +1,20 @@
 <template>
-  <div class="base-info">
-    <div class="info-title">
-      {{good.titles}}
-    </div>
+  <div v-if="Object.keys(good).length !== 0" class="base-info">
+    <div class="info-title">{{good.titles}}</div>
     <div class="info-price">
       <span id="new-price">{{good.newPrice}}</span>
       <span id="old-price">{{good.oldPrice}}</span>
-      <span id="discount">{{good.discount}}</span>
+      <span v-if="good.discount" id="discount">{{good.discount}}</span>
     </div>
     <div class="info-other">
       <span>{{good.columns[0]}}</span>
       <span>{{good.columns[1]}}</span>
-      <span>{{good.services[3].name}}</span>
+      <span>{{good.services[good.services.length - 1].name}}</span>
     </div>
     <div class="info-services">
-      <div v-for="item in good.services.slice(0, 3)" :key="item.desc">
-        <img :src="item.icon" alt="">
-        <span>{{item.name}}</span>
+      <div v-for="index in good.services.length - 1" :key="index">
+        <img :src="good.services[index-1].icon" alt="">
+        <span>{{good.services[index-1].name}}</span>
       </div>
     </div>
   </div>
